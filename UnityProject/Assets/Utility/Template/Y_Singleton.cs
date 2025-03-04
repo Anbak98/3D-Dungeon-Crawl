@@ -64,5 +64,6 @@ public class Y_Singleton<T> : MonoBehaviour where T : Component
         }
 
         _instance = this as T;
+        DontDestroyOnLoad(this);
     }
 }

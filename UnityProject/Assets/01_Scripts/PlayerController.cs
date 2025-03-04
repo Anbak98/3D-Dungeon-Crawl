@@ -6,27 +6,21 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
-    private PlayerStatus status;
+    [SerializeField] private PlayerCondition _status;
+    [SerializeField] private Rigidbody _rb;
 
-    [Header("Movement")]
-    [ReadOnly] public float moveSpeed = .0f;
+    public float moveSpeed => _status.moveSpeed;
     private Vector3 _curMovementInput = Vector3.zero;
 
-    [Header("Look")]
     public Transform cameraContainer;
     [ReadOnly, SerializeField] private Quaternion _initialRotation;
     [ReadOnly, SerializeField] private Vector3 _initialPosition;
-
-    private Rigidbody _rb;
 
     [HideInInspector]
     public bool camLock = false;
 
     private void Start()
     {
-        status = ResourceLoadManager.Instance.PlayerStatus;
-        moveSpeed = status.moveSpeed;
-        _rb = GetComponent<Rigidbody>();
         _initialRotation = cameraContainer.transform.rotation;
         _initialPosition = cameraContainer.transform.position;
     }

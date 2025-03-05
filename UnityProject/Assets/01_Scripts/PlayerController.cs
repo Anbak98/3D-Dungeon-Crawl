@@ -3,60 +3,112 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.UIElements;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private PlayerCondition _status;
+
+    // Movement related
     [SerializeField] private Rigidbody _rb;
-
-    public float moveSpeed => _status.moveSpeed;
+    private Vector3 _curMovement = Vector3.zero;
     private Vector3 _curMovementInput = Vector3.zero;
+    public float deceleration = 1f;
+    public float acceleration = 1f;
+    private bool isDecel = false;
+    public LayerMask groundLayerMask;
 
-    public Transform cameraContainer;
-    [ReadOnly, SerializeField] private Quaternion _initialRotation;
-    [ReadOnly, SerializeField] private Vector3 _initialPosition;
+    // Look related
+    [SerializeField] private Transform look;
+    [HideInInspector] public bool camLock = false;
+    public float minXLook;
+    public float maxXLook;
+    private float lookCurXRot;
+    private float lookCurYRot;
+    public float lookSensitivity;
 
-    [HideInInspector]
-    public bool camLock = false;
+    private Vector2 mouseDelta;
 
-    private void Start()
+    public void OnFixedUpdate()
     {
-        _initialRotation = cameraContainer.transform.rotation;
-        _initialPosition = cameraContainer.transform.position;
+        if (IsGrounded()) Move();
     }
 
-    private void FixedUpdate()
+    public void OnLateUpdate()
     {
-        Move();
-    }
-
-    private void LateUpdate()
-    {
-        if (!camLock) CameraLook();
+        if (!camLock) Look();
     }
 
     public void OnMoveInput(InputAction.CallbackContext context)
     {
         if(context.phase == InputActionPhase.Performed)
         {
+            isDecel = false;
             _curMovementInput = context.ReadValue<Vector2>();
         }
         else if(context.phase == InputActionPhase.Canceled)
         {
-            _curMovementInput = Vector2.zero;
+            isDecel = true;
+            _curMovementInput = Vector3.zero;
         }
     }
 
     private void Move()
     {
-        Vector3 dir = Vector3.forward * _curMovementInput.y + Vector3.right * _curMovementInput.x;
-        dir *= moveSpeed;
+        if (isDecel)
+        {
+            _curMovement = Vector3.Lerp(_curMovement, Vector3.zero, deceleration * Time.fixedDeltaTime);
+
+            if (_curMovement.magnitude < 0.05f)
+            {
+                _curMovement = Vector3.zero;
+                isDecel = false;
+            }
+        }
+
+        if (_curMovementInput != Vector3.zero)
+        {
+            _curMovement = Vector3.Lerp(_curMovement, _curMovementInput, acceleration * Time.fixedDeltaTime);
+        }
+
+        Vector3 dir = look.forward * _curMovement.y + look.right * _curMovement.x;
+        dir *= _status.moveSpeed;
         dir.y = _rb.velocity.y;
         _rb.velocity = dir;
     }
 
-    private void CameraLook()
+    public void OnLookInput(InputAction.CallbackContext context)
     {
-        cameraContainer.transform.position = transform.position;
+        mouseDelta = context.ReadValue<Vector2>();
+    }
+
+    private void Look()
+    {
+        look.transform.position = _rb.transform.position;
+
+        lookCurXRot += mouseDelta.y * lookSensitivity;
+        lookCurYRot += mouseDelta.x * lookSensitivity;
+
+        look.localEulerAngles = new Vector3(-lookCurXRot, lookCurYRot, 0);
+    }
+    private bool IsGrounded()
+    {
+        Ray[] rays = new Ray[4]
+        {
+            new Ray(_rb.transform.position + (_rb.transform.forward * 0.2f) + (_rb.transform.up * 0.01f), Vector3.down),
+            new Ray(_rb.transform.position + (-_rb.transform.forward * 0.2f) + (_rb.transform.up * 0.01f), Vector3.down),
+            new Ray(_rb.transform.position + (_rb.transform.right * 0.2f) + (_rb.transform.up * 0.01f), Vector3.down),
+            new Ray(_rb.transform.position + (-_rb.transform.right * 0.2f) +(_rb.transform.up * 0.01f), Vector3.down)
+        };
+
+        for (int i = 0; i < rays.Length; i++)
+        {
+            if (Physics.Raycast(rays[i], 0.6f, groundLayerMask))
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

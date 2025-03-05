@@ -35,16 +35,13 @@ public class PlayerCondition : MonoBehaviour, IDamagable
     public Action OnMoveSpeedChanged;
 
     // Start is called before the first frame update
-    void Awake()
+    public void OnAwake()
     {
         _statusInfo = ResourceLoadManager.Instance.PlayerStatus;
-    }
-
-    private void Start()
-    {
         health = _statusInfo.health;
         moveSpeed = _statusInfo.moveSpeed;
     }
+
     public void TakePhysicalDamage(int damageAmount)
     {
         Health -= damageAmount;

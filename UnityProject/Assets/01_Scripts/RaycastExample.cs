@@ -17,7 +17,7 @@ public class RaycastExample : MonoBehaviour
         // 레이캐스트가 충돌한 오브젝트 출력
         if (Physics.Raycast(transform.position, transform.forward, out hit, rayDistance, layerMask))
         {
-            Debug.Log("Hit Object: " + hit.collider.gameObject.name);
+            //Debug.Log("Hit Object: " + hit.collider.gameObject.name);
         }
     }
 }

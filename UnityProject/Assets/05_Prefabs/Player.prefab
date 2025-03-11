@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 2149555602332320534}
   - component: {fileID: 992854310523972242}
   - component: {fileID: 1664996789298528388}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: PlayerFollowCamera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}
@@ -105,7 +105,7 @@ GameObject:
   - component: {fileID: 8215500006943497878}
   - component: {fileID: 8934416664364864480}
   - component: {fileID: 5380192429984321007}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Body
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -155,7 +155,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 9f2645559b8b14773b709fbd9bd6e2ff, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -235,7 +235,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6339712462034484551}
   - component: {fileID: 7205177876289913322}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Look
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -273,7 +273,7 @@ MonoBehaviour:
   rayDistance: 10
   layerMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 512
 --- !u!1 &8169883787922815314
 GameObject:
   m_ObjectHideFlags: 0
@@ -287,7 +287,7 @@ GameObject:
   - component: {fileID: 6776249755159776327}
   - component: {fileID: 3741500964662893663}
   - component: {fileID: 4826263279372667079}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Player
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -337,17 +337,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5921ab4142a80934d9aa630860a8fdf5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _status: {fileID: 7412294852274385221}
-  _rb: {fileID: 5380192429984321007}
-  deceleration: 1
   groundLayerMask:
     serializedVersion: 2
     m_Bits: 64
-  look: {fileID: 0}
-  camLock: 0
-  minXLook: 0
-  maxXLook: 0
-  lookSensitivity: 0
+  chargingJumpingPadLayerMask:
+    serializedVersion: 2
+    m_Bits: 1024
+  wallLayerMask:
+    serializedVersion: 2
+    m_Bits: 256
+  interactableObjectDetector: {fileID: 7205177876289913322}
+  body: {fileID: 5380192429984321007}
+  deceleration: 1
+  acceleration: 1
+  look: {fileID: 6339712462034484551}
+  lookSensitivity: 1
 --- !u!114 &3741500964662893663
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -360,8 +364,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 22d4bf0bd48ac794199fc2be73cbe7c2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  body: {fileID: 5380192429984321007}
+  look: {fileID: 6339712462034484551}
   status: {fileID: 7412294852274385221}
-  _controller: {fileID: 6776249755159776327}
+  interactableObjectDetector: {fileID: 7205177876289913322}
+  controller: {fileID: 6776249755159776327}
 --- !u!114 &4826263279372667079
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -404,9 +411,41 @@ MonoBehaviour:
     m_ActionId: f287e6a6-65eb-40e3-a4c6-cfd1cc8d5fc7
     m_ActionName: Player/Move[/Keyboard/upArrow,/Keyboard/downArrow,/Keyboard/leftArrow,/Keyboard/rightArrow]
   - m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 6776249755159776327}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnLookInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_ActionId: d3588983-98de-409e-a46e-c60e0d2f541a
     m_ActionName: Player/Look[/Mouse/delta]
+  - m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 6776249755159776327}
+        m_TargetAssemblyTypeName: PlayerController, Assembly-CSharp
+        m_MethodName: OnSpaceInput
+        m_Mode: 0
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+    m_ActionId: d48ffa3f-4b69-4003-81cd-7a3df7635138
+    m_ActionName: Player/Jump[/Keyboard/space]
+  - m_PersistentCalls:
+      m_Calls: []
+    m_ActionId: 5142b19b-9ad0-4212-bd34-a4df0fd8c772
+    m_ActionName: Player/Inventory[/Keyboard/tab]
   m_NeverAutoSwitchControlSchemes: 0
   m_DefaultControlScheme: 
   m_DefaultActionMap: Player

@@ -1,20 +1,24 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] public PlayerCondition status;
-    [SerializeField] private PlayerController _controller;
+    public PlayerCondition status;
+    public PlayerController controller;
+    public ItemData rootedItem;
+    public Action addItem;
 
     private void Awake()
     {
-        status.OnAwake();
         CharacterManager.Instance.Player = this;
+        status.OnAwake();
     }
 
     private void Start()
     {
+        controller.OnStart();
     }
 
     private void Update()
@@ -24,12 +28,12 @@ public class Player : MonoBehaviour
     private void FixedUpdate()
     {
         if (!Application.isFocused) return;
-        _controller.OnFixedUpdate();
+        controller.OnFixedUpdate();
     }
 
     private void LateUpdate()
     {
         if (!Application.isFocused) return;
-        _controller.OnLateUpdate();
+        controller.OnLateUpdate();
     }
 }
